@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<project name="HelloWorld" default="echo" basedir=".">
+    <target name="echo">
+        <echo message="Hello World"/>
+    </target>
+</project>

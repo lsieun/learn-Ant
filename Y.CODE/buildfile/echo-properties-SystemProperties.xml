@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<project name="HelloWorld" default="echo" basedir=".">
+    <target name="echo">
+        <echo message="current user is ${user.name}"/>
+        <echo message="user home is ${user.home}"/>
+    </target>
+</project>

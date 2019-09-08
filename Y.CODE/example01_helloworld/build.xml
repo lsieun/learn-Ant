@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<project name="helloworld" default="test">
+    <target name="test" description="This is my Test">
+        <echo message="current user is ${user.name}"/>
+    </target>
+</project>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<project name="structured" default="archive" >
+
+<!-- Creates the output directories -->
+<target name="init">
+    <mkdir dir="build/classes" />
+    <mkdir dir="dist" />
+</target>
+
+<!-- Compiles into the output directories -->
+<target name="compile" depends="init">
+    <javac srcdir="src" destdir="build/classes"/>
+</target>
+
+<!-- Creates the archive -->
+<target name="archive" depends="compile" >
+    <jar destfile="dist/project.jar" basedir="build/classes" />
+</target>
+
+<!-- Deletes the output directories -->
+<target name="clean" depends="init">
+    <delete dir="build" />
+    <delete dir="dist" />
+</target>
+
+<target name="execute" depends="compile">
+    <java classname="com.example.ant.Main" classpath="build/classes">
+        <arg value="a"/>
+        <arg value="b"/>
+        <arg file="."/>
+    </java>
+</target>
+
+</project>

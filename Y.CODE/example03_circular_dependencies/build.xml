@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<project name="loop" default="loop" >
+
+<echo>loop test</echo>
+
+<target name="loop" depends="loop">
+    <echo>looping</echo>
+</target>
+
+</project>
