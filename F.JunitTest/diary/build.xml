@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<project name="diary" default="compile.test" basedir=".">
+
+    <property name="src" value="src"/>
+    <property name="build" value="build"/>
+    <property name="dist" value="dist"/>
+    <property name="lib" value="lib"/>
+
+    <property name="build.classes" value="${build}/classes"/>
+    <property name="build.test" value="${build}/test"/>
+    <property name="build.test.classes" value="${build.test}/classes"/>
+
+    <path id="test.compile.class">
+        <fileset dir="${lib}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- Creates the output directories -->
+    <target name="init">
+        <mkdir dir="${build.classes}"/>
+        <mkdir dir="${build.test.classes}"/>
+        <mkdir dir="dist"/>
+    </target>
+
+    <!-- Compiles into the output directories -->
+    <target name="compile" depends="init">
+        <javac srcdir="${src}" destdir="${build.classes}">
+            <include name="**/*.java"/>
+            <exclude name="**/test/**/*.java"/>
+        </javac>
+    </target>
+
+    <target name="compile.test" depends="init">
+        <javac srcdir="${src}" destdir="${build.test.classes}">
+            <classpath path="${build.classes}"/>
+            <classpath refid="test.compile.class"/>
+            <include name="**/test/**/*.java"/>
+        </javac>
+    </target>
+
+    <!-- Creates the archive -->
+    <target name="archive" depends="compile">
+        <jar destfile="dist/project.jar" basedir="build/classes"/>
+    </target>
+
+    <!-- Deletes the output directories -->
+    <target name="clean" depends="init">
+        <delete dir="build"/>
+        <delete dir="dist"/>
+    </target>
+
+    <target name="execute" depends="compile">
+        <java classname="com.example.ant.Main" classpath="build/classes">
+            <arg value="a"/>
+            <arg value="b"/>
+            <arg file="."/>
+        </java>
+    </target>
+
+</project>

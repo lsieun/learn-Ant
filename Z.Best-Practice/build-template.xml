@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="structured" default="archive" >
+<project name="structured" default="archive" basedir=".">
 
 <!-- Creates the output directories -->
 <target name="init">
