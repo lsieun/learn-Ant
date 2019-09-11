@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="HelloWorld" default="echoTimestamp" basedir=".">
+    <tstamp/>
+    <target name="echoTimestamp">
+        <echo message="DSTAMP = ${DSTAMP}"/>
+        <echo message="TSTAMP = ${TSTAMP}"/>
+        <echo message="TODAY = ${TODAY}"/>
+
+        <tstamp>
+            <format property="dayofweek" pattern="EEEE"/>
+        </tstamp>
+        <echo message="It is ${dayofweek}"/>
+
+        <tstamp>
+            <format property="buildtime" pattern="yyyy-MM-dd'T'HH:mm:ss" />
+        </tstamp>
+        <echo message="buildtime = ${buildtime}"/>
+
+    </target>
+</project>

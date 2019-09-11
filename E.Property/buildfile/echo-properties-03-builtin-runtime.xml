@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="myproject" default="secondtarget" basedir=".">
+
+    <echo message="ant.project.invoked-targets = ${ant.project.invoked-targets}"/>
+
+    <target name="firsttarget">
+        <echo message="first target"/>
+    </target>
+    <target name="secondtarget">
+        <echo message="second target"/>
+    </target>
+</project>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="myproject" default="mytarget" basedir=".">
+    <target name="mytarget">
+        <echo message="                  ant.file = ${ant.file}"/>
+        <echo message="          ant.project.name = ${ant.project.name}"/>
+        <echo message="ant.project.default-target = ${ant.project.default-target}"/>
+        <echo message="                   basedir = ${basedir}"/>
+    </target>
+</project>

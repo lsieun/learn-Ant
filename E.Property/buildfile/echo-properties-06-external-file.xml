@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<project name="HelloWorld" default="test" basedir=".">
+    <property file="build.propertoes"/>
+    <target name="test">
+        <echo message="release.dir = ${release.dir}"/>
+    </target>
+</project>

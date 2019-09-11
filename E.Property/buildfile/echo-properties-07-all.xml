@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="HelloWorld" default="echoall" basedir=".">
+    <property name="zzz.yyy.xxx" value="xyz"/>
+    <target name="echoall">
+        <echoproperties />
+    </target>
+
+    <target name="echoxml">
+        <echoproperties format="xml" destfile="current-properties.xml"/>
+    </target>
+</project>

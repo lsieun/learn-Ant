@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<project name="HelloWorld" default="echo" basedir=".">
+    <property environment="env"/>
+    <target name="echo">
+        <echo message="env.PATH = ${env.PATH}"/>
+        <echoproperties />
+    </target>
+</project>

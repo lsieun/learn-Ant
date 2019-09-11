@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="HelloWorld" default="echo" basedir=".">
+    <target name="echo">
+        <echo message="ant.java.version = ${ant.java.version}"/>
+        <echo message="     ant.version = ${ant.version}"/>
+        <echo message="        ant.home = ${ant.home}"/>
+        <echo message=" ant.library.dir = ${ant.library.dir}"/>
+        <echo message="    ant.core.lib = ${ant.core.lib}"/>
+    </target>
+</project>
