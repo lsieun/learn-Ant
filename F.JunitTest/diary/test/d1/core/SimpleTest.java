@@ -1,6 +1,5 @@
-package d1.core.test;
+package d1.core;
 
-import d1.core.Event;
 import junit.framework.TestCase;
 
 public class SimpleTest extends TestCase {

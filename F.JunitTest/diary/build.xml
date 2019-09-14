@@ -1,46 +1,120 @@
 <?xml version="1.0"?>
-<project name="diary" default="compile.test" basedir=".">
+<project name="diary" default="archive" basedir=".">
 
-    <property name="src" value="src"/>
-    <property name="build" value="build"/>
-    <property name="dist" value="dist"/>
-    <property name="lib" value="lib"/>
+    <property name="src.dir" location="src"/>
+    <property name="build.dir" location="build"/>
+    <property name="dist.dir" location="dist"/>
+    <property name="lib.dir" location="lib"/>
 
-    <property name="build.classes" value="${build}/classes"/>
-    <property name="build.test" value="${build}/test"/>
-    <property name="build.test.classes" value="${build.test}/classes"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
 
-    <path id="test.compile.class">
-        <fileset dir="${lib}">
+    <property name="test.src.dir" location="test"/>
+    <property name="test.dir" location="${build.dir}/test"/>
+    <property name="test.classes.dir" location="${test.dir}/classes"/>
+    <property name="test.data.dir" location="${test.dir}/data"/>
+    <property name="test.reports.dir" location="${test.dir}/reports"/>
+
+    <path id="compile.classpath">
+        <fileset dir="${lib.dir}">
             <include name="*.jar"/>
         </fileset>
     </path>
 
-    <!-- Creates the output directories -->
+    <path id="test.compile.classpath">
+        <path refid="compile.classpath"/>
+        <pathelement location="${build.classes.dir}"/>
+    </path>
+
+    <path id="test.classpath">
+        <path refid="test.compile.classpath"/>
+        <pathelement location="${test.classes.dir}"/>
+    </path>
+
     <target name="init">
-        <mkdir dir="${build.classes}"/>
-        <mkdir dir="${build.test.classes}"/>
-        <mkdir dir="dist"/>
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
     </target>
 
-    <!-- Compiles into the output directories -->
+    <target name="test-init">
+        <mkdir dir="${test.classes.dir}"/>
+        <delete dir="${test.data.dir}"/>
+        <delete dir="${test.reports.dir}"/>
+        <mkdir dir="${test.data.dir}"/>
+        <mkdir dir="${test.reports.dir}"/>
+    </target>
+
     <target name="compile" depends="init">
-        <javac srcdir="${src}" destdir="${build.classes}">
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}">
             <include name="**/*.java"/>
-            <exclude name="**/test/**/*.java"/>
         </javac>
     </target>
 
-    <target name="compile.test" depends="init">
-        <javac srcdir="${src}" destdir="${build.test.classes}">
-            <classpath path="${build.classes}"/>
-            <classpath refid="test.compile.class"/>
-            <include name="**/test/**/*.java"/>
+    <target name="test-compile" depends="compile,test-init">
+        <javac srcdir="${test.src.dir}"
+               destdir="${test.classes.dir}"
+               debug="true"
+               debuglevel="lines,vars,source"
+               includeAntRuntime="true">
+            <classpath refid="test.compile.classpath"/>
         </javac>
+    </target>
+
+    <property name="test.suite" value="d1.core.LessSimpleTest"/>
+
+    <target name="test-one-class" depends="test-compile">
+        <junit printsummary="false" haltonfailure="true">
+            <classpath refid="test.classpath"/>
+            <formatter type="brief" usefile="false"/>
+            <test name="${test.suite}"/>
+        </junit>
+    </target>
+
+    <target name="test-multi-classes" depends="test-compile">
+        <junit printsummary="false" haltonfailure="false">
+            <classpath refid="test.classpath"/>
+            <formatter type="brief" usefile="false"/>
+            <formatter type="xml"/>
+            <batchtest todir="${test.data.dir}">
+                <fileset dir="${test.classes.dir}" includes="**/*Test.class"/>
+            </batchtest>
+        </junit>
+        <junitreport todir="${test.data.dir}">
+            <fileset dir="${test.data.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${test.reports.dir}"/>
+        </junitreport>
+    </target>
+
+    <target name="test-reporting" depends="test-compile">
+        <junit printsummary="false"
+               errorProperty="test.failed"
+               failureProperty="test.failed" fork="true">
+            <classpath>
+                <path refid="test.classpath"/>
+            </classpath>
+            <formatter type="brief" usefile="false"/>
+            <formatter type="xml"/>
+            <batchtest todir="${test.data.dir}" >
+                <fileset dir="${test.classes.dir}"
+                         includes="**/*Test.class"/>
+            </batchtest>
+        </junit>
+        <junitreport todir="${test.data.dir}">
+            <fileset dir="${test.data.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames"
+                    todir="${test.reports.dir}"/>
+        </junitreport>
+        <!-- Conditional fail task triggered when the property is set-->
+        <fail if="test.failed">
+            Tests failed. Check ${test.reports.dir}
+        </fail>
     </target>
 
     <!-- Creates the archive -->
-    <target name="archive" depends="compile">
+    <target name="archive" depends="test-one-class">
         <jar destfile="dist/project.jar" basedir="build/classes"/>
     </target>
 
