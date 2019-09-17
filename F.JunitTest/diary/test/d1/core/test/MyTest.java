@@ -1,4 +1,4 @@
-package d1.core;
+package d1.core.test;
 
 import org.junit.Test;
 

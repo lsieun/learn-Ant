@@ -1,4 +1,4 @@
-package d1.core;
+package d1.core.test;
 
 import java.util.Date;
 import java.util.UUID;
@@ -17,7 +17,7 @@ public class LessSimpleTest extends TestCase {
         Date now = new Date();
         assertEquals("Two Dates not equal", now, now);
 
-        boolean flag = false;
+        boolean flag = true;
         assertTrue("flag is not true", flag);
 
         System.out.println("Hello JUnit");

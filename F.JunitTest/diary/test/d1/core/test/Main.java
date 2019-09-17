@@ -1,7 +1,10 @@
-package d1.core;
+package d1.core.test;
 
 import java.util.Date;
 import java.util.UUID;
+
+import d1.core.Event;
+import d1.core.Events;
 
 public class Main {
     public static void main(String args[]) throws Exception {

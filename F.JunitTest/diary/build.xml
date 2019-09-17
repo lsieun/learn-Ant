@@ -1,18 +1,33 @@
 <?xml version="1.0"?>
-<project name="diary" default="archive" basedir=".">
+<project name="diary" default="jar" basedir=".">
 
     <property name="src.dir" location="src"/>
-    <property name="build.dir" location="build"/>
-    <property name="dist.dir" location="dist"/>
     <property name="lib.dir" location="lib"/>
 
+    <property name="build.dir" location="build"/>
     <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <property name="build.test.dir" location="${build.dir}/test"/>
 
     <property name="test.src.dir" location="test"/>
-    <property name="test.dir" location="${build.dir}/test"/>
-    <property name="test.classes.dir" location="${test.dir}/classes"/>
-    <property name="test.data.dir" location="${test.dir}/data"/>
-    <property name="test.reports.dir" location="${test.dir}/reports"/>
+    <property name="test.classes.dir" location="${build.test.dir}/classes"/>
+    <property name="test.data.dir" location="${build.test.dir}/data"/>
+    <property name="test.reports.dir" location="${build.test.dir}/reports"/>
+
+    <property name="dist.dir" location="dist"/>
+    <property name="dist.doc.dir" location="${dist.dir}/doc"/>
+    <property name="javadoc.dir" location="${dist.doc.dir}/api"/>
+
+    <property name="source.files.tocopy" value="**/*.properties,**/*.dtd,**/*.xml,**/*.xsd,**/*.jpg"/>
+
+    <property name="project.name" value="${ant.project.name}"/>
+    <property name="project.version" value="0.1alpha"/>
+    <property name="project.name-ver" value="${project.name}-${project.version}"/>
+    <property name="target.jar" location="${dist.dir}/${project.name-ver}.jar"/>
+    <property name="target.zip" location="${dist.dir}/${project.name-ver}.zip"/>
+    <property name="src.zip" location="${dist.dir}/${project.name-ver}-src.zip"/>
+    <property name="target.tar" location="${dist.dir}/${project.name-ver}.tar"/>
+    <property name="target.tar.gz" location="${target.tar}.gz"/>
+    <property name="target.tar.bz2" location="${target.tar}.bz2"/>
 
     <path id="compile.classpath">
         <fileset dir="${lib.dir}">
@@ -32,7 +47,7 @@
 
     <target name="init">
         <mkdir dir="${build.classes.dir}"/>
-        <mkdir dir="${dist.dir}"/>
+        <mkdir dir="${dist.doc.dir}"/>
     </target>
 
     <target name="test-init">
@@ -47,6 +62,9 @@
         <javac srcdir="${src.dir}" destdir="${build.classes.dir}">
             <include name="**/*.java"/>
         </javac>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${src.dir}" includes="${source.files.tocopy}"/>
+        </copy>
     </target>
 
     <target name="test-compile" depends="compile,test-init">
@@ -59,7 +77,7 @@
         </javac>
     </target>
 
-    <property name="test.suite" value="d1.core.LessSimpleTest"/>
+    <property name="test.suite" value="d1.core.test.LessSimpleTest"/>
 
     <target name="test-one-class" depends="test-compile">
         <junit printsummary="false" haltonfailure="true">
@@ -75,7 +93,7 @@
             <formatter type="brief" usefile="false"/>
             <formatter type="xml"/>
             <batchtest todir="${test.data.dir}">
-                <fileset dir="${test.classes.dir}" includes="**/*Test.class"/>
+                <fileset dir="${test.classes.dir}" includes="**/test/*Test.class"/>
             </batchtest>
         </junit>
         <junitreport todir="${test.data.dir}">
@@ -95,9 +113,9 @@
             </classpath>
             <formatter type="brief" usefile="false"/>
             <formatter type="xml"/>
-            <batchtest todir="${test.data.dir}" >
+            <batchtest todir="${test.data.dir}">
                 <fileset dir="${test.classes.dir}"
-                         includes="**/*Test.class"/>
+                         includes="**/test/*Test.class"/>
             </batchtest>
         </junit>
         <junitreport todir="${test.data.dir}">
@@ -113,15 +131,69 @@
         </fail>
     </target>
 
-    <!-- Creates the archive -->
-    <target name="archive" depends="test-one-class">
-        <jar destfile="dist/project.jar" basedir="build/classes"/>
+
+    <target name="jar" depends="compile">
+        <jar destfile="${target.jar}"
+             duplicate="preserve"
+             compress="false">
+            <fileset dir="${build.classes.dir}"/>
+        </jar>
     </target>
 
-    <!-- Deletes the output directories -->
-    <target name="clean" depends="init">
-        <delete dir="build"/>
-        <delete dir="dist"/>
+    <target name="dist-with-manifest" depends="compile" description="make the distribution">
+        <jar destfile="${target.jar}"
+             duplicate="preserve"
+             index="true"
+             manifest="src/META-INF/MANIFEST.MF">
+            <fileset dir="${build.classes.dir}"/>
+        </jar>
+    </target>
+
+    <target name="jar-dynamic-manifest" depends="compile">
+        <property name="manifest.mf" location="${build.dir}/manifest.mf"/>
+        <property name="main.class" value="d1.DiaryMain"/>
+        <tstamp>
+            <format property="timestamp.isoformat" pattern="yyyy-MM-dd'T'HH:mm:ss"/>
+        </tstamp>
+
+        <manifest file="${manifest.mf}">
+            <attribute name="Built-By" value="${user.name}"/>
+            <attribute name="Sealed" value="true"/>
+            <attribute name="Built-On" value="${timestamp.isoformat}"/>
+            <attribute name="Main-Class" value="${main.class}"/>
+        </manifest>
+
+        <jar destfile="${target.jar}" duplicate="preserve" manifest="${manifest.mf}">
+            <fileset dir="${build.classes.dir}"/>
+        </jar>
+    </target>
+
+
+    <target name="javadocs" depends="compile" description="make the java docs">
+        <javadoc
+                access="private"
+                sourcepath="${src.dir}"
+                destdir="${javadoc.dir}"
+                packagenames="d1.*"
+                use="true"
+                version="true"
+                windowtitle="${ant.project.name}"
+                failonerror="true">
+            <classpath refid="compile.classpath"/>
+        </javadoc>
+    </target>
+
+    <target name="fix-docs" depends="javadocs">
+        <property name="readme.windows.file" location="${dist.doc.dir}/readme.txt"/>
+        <property name="readme.unix.file" location="${dist.doc.dir}/README"/>
+        <copy file="${readme.windows.file}" tofile="${readme.unix.file}"/>
+        <fixcrlf eol="crlf" file="${readme.windows.file}" tab="remove" tablength="4"/>
+        <fixcrlf eol="lf" file="${readme.unix.file}" tab="remove" tablength="2"/>
+    </target>
+
+    <target name="clean" description="Deletes files generated by the build.">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
     </target>
 
     <target name="execute" depends="compile">
@@ -132,4 +204,117 @@
         </java>
     </target>
 
+
+    <target name="init-security">
+        <property name="keystore.dir" location="${user.home}/.secret"/>
+        <mkdir dir="${keystore.dir}"/>
+        <chmod file="${keystore.dir}" perm="700"/>
+        <property name="keystore" location="${keystore.dir}/local.keystore"/>
+        <property file="${keystore.dir}/keystore.properties"/>
+        <property name="keystore.alias" value="code.signer"/>
+    </target>
+
+
+    <target name="get-password" depends="init-security">
+        <input addproperty="keystore.password">password for keystore:</input>
+        <echo level="verbose">password = ${keystore.password}</echo>
+    </target>
+
+    <target name="create-signing-key" depends="get-password">
+        <genkey alias="${keystore.alias}"
+                keystore="${keystore}"
+                storepass="${keystore.password}"
+                validity="366"
+                dname="CN=Ant Group, OU=Jakarta Division, O=Apache.org, C=US"/>
+    </target>
+
+    <target name="sign-jar" depends="jar,get-password">
+        <signjar jar="${target.jar}"
+                 alias="${keystore.alias}"
+                 keystore="${keystore}"
+                 storepass="${keystore.password}"/>
+    </target>
+
+    <path id="test.jar.classpath">
+        <path refid="compile.classpath"/>
+        <pathelement location="${target.jar}"/>
+        <pathelement location="${test.classes.dir}"/>
+    </path>
+
+    <target name="test-jar" depends="test-compile,sign-jar">
+        <junit printsummary="false" haltonfailure="false">
+            <classpath refid="test.jar.classpath"/>
+            <formatter type="brief" usefile="false"/>
+            <batchtest todir="${test.data.dir}">
+                <fileset dir="${test.classes.dir}"
+                         includes="**/test/*Test.class"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="create-bin-zipfile"
+            depends="sign-jar,fix-docs"
+            description="create the distributable for Windows">
+        <zip destFile="${target.zip}" duplicate="preserve">
+            <zipfileset file="${target.jar}" prefix="${project.name-ver}"/>
+            <zipfileset dir="${dist.doc.dir}" includes="**/*" prefix="${project.name-ver}/docs"/>
+            <zipfileset dir="${javadoc.dir}" includes="**/*" prefix="${project.name-ver}/docs/api"/>
+        </zip>
+    </target>
+
+    <property name="unzip.dir" location="${build.dir}/unzip"/>
+    <property name="unzip.bin.dir" location="${unzip.dir}/bin"/>
+
+    <target name="unzip-bin-zipfile" depends="create-bin-zipfile">
+        <unzip src="${target.zip}" dest="${unzip.bin.dir}"/>
+    </target>
+
+    <target name="create-src-zipfile" depends="sign-jar">
+        <zip destfile="${src.zip}" duplicate="preserve">
+            <zipfileset file="${target.jar}" prefix="${project.name-ver}"/>
+            <zipfileset dir="." includes="src/**,test/**,doc/**,*.xml" prefix="${project.name-ver}"/>
+        </zip>
+    </target>
+
+    <target name="unzip-src-zipfile" depends="create-src-zipfile">
+        <unzip src="${src.zip}" dest="${build.dir}/src"/>
+    </target>
+
+    <property name="executables" value="**/*.sh"/>
+
+    <target name="create-bin-tar" depends="unzip-bin-zipfile">
+        <tar destfile="${target.tar}" longfile="gnu">
+            <tarfileset dir="${unzip.bin.dir}" excludes="${executables}"/>
+            <tarfileset dir="${unzip.bin.dir}" includes="${executables}" filemode="755"/>
+        </tar>
+    </target>
+
+    <target name="compress-tar" depends="create-bin-tar">
+        <gzip src="${target.tar}" destfile="${target.tar.gz}"/>
+        <bzip2 src="${target.tar}" destfile="${target.tar.bz2}"/>
+    </target>
+
+    <property name="untar.dir" location="${build.dir}/untar"/>
+    <target name="untar-bin.tar.gz" depends="compress-tar">
+        <mkdir dir="${untar.dir}"/>
+        <gunzip src="${target.tar.gz}" dest="${untar.dir}"/>
+        <untar src="${untar.dir}/${project.name-ver}.tar" dest="${untar.dir}"/>
+    </target>
+
+    <path id="run.classpath">
+        <path refid="compile.classpath"/>
+        <pathelement location="${target.jar}"/>
+    </path>
+
+    <target name="run" depends="sign-jar">
+        <echo>running with classpath ${toString:run.classpath}</echo>
+        <property environment="env"/>
+        <java classname="d1.DiaryMain" classpathref="run.classpath">
+            <!--<arg value="2019-09-17 22:00:00" />-->
+            <!--<arg file="." />-->
+            <!--<arg path="${user.home}:${env.ANT_HOME}" />-->
+            <!--<arg pathref="run.classpath"/>-->
+            <arg line ="2019-09-17 . ${user.home};/" />
+        </java>
+    </target>
 </project>

@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<project name="diary" default="mapper.composite" basedir=".">
+
+    <property name="src.dir" location="src"/>
+
+    <property name="dist.dir" location="dist"/>
+    <property name="dist.doc.dir" location="${dist.dir}/doc"/>
+    <property name="dist.sources.dir" location="${dist.dir}/sources"/>
+
+    <target name="init">
+        <delete dir="${dist.dir}"/>
+        <mkdir dir="${dist.doc.dir}"/>
+        <mkdir dir="${dist.sources.dir}"/>
+    </target>
+
+    <target name="mapper.flatten" depends="init">
+        <copy todir="${dist.sources.dir}">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <flattenmapper/>
+        </copy>
+    </target>
+
+    <target name="mapper.glob" depends="init">
+        <copy todir="${dist.sources.dir}">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <globmapper from="*.java" to="*.java.bak"/>
+        </copy>
+    </target>
+
+    <target name="mapper.regex" depends="init">
+        <copy todir="${dist.sources.dir}">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <regexpmapper from="^(.*)\.java" to="\1.java.regex"/>
+        </copy>
+    </target>
+
+    <target name="mapper.package" depends="init">
+        <copy todir="${dist.sources.dir}">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <packagemapper from="*.java" to="*.java"/>
+        </copy>
+    </target>
+
+    <target name="mapper.composite" depends="init">
+        <copy todir="${dist.sources.dir}">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <compositemapper>
+                <!--<identitymapper/>-->
+                <globmapper from="*.java" to="*.java.txt"/>
+                <packagemapper from="*.java" to="*"/>
+            </compositemapper>
+        </copy>
+    </target>
+
+    <target name="mapper.chained" depends="init">
+        <copy todir="${dist.sources.dir}">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <chainedmapper>
+                <flattenmapper/>
+                <globmapper from="*.java" to="*.txt"/>
+            </chainedmapper>
+        </copy>
+    </target>
+
+    <target name="modify.file" depends="init">
+        <tstamp/>
+        <copy todir="${dist.doc.dir}" overwrite="true">
+            <fileset dir="doc" includes="**/*.html"/>
+            <filterset>
+                <filter token="DATE" value="${DSTAMP}"/>
+                <filter token="TIME" value="${TSTAMP}"/>
+            </filterset>
+        </copy>
+    </target>
+
+</project>
