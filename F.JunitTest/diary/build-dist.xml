@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="diary" default="checksum" basedir=".">
+
+    <property name="target.zip" location="dist/diary-0.1alpha.jar"/>
+
+    <target name="checksum">
+        <checksum file="${target.zip}" algorithm="sha1" format="MD5SUM"/>
+    </target>
+</project>

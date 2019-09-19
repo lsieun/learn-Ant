@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 <project name="HelloWorld" default="test" basedir=".">
-    <property file="build.propertoes"/>
+    <property file="build.properties"/>
+    <property name="output.dir.absolute" location="${output.dir}"/>
     <target name="test">
+        <echo message="output.dir = ${output.dir}"/>
+        <echo message="output.dir.absolute = ${output.dir.absolute}"/>
+        
         <echo message="release.dir = ${release.dir}"/>
     </target>
 </project>

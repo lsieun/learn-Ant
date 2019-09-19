@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Created-By: Antbook Development Team
 Sealed: true
-Main-Class: d1.DiaryMain
+Main-Class: d1.core.DiaryMain

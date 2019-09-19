@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project name="diary" default="jconsole" basedir=".">
+
+    <target name="exe">
+        <exec executable="ln">
+            <arg value="-s"/>
+            <arg value="build.xml"/>
+            <arg value="symlink.xml"/>
+        </exec>
+    </target>
+
+    <target name="shell">
+        <exec executable="sh" failonerror="true">
+            <arg line="-c 'jps -l &gt; processes.txt'"/>
+        </exec>
+    </target>
+
+    <target name="os" >
+        <condition property="is.unix">
+            <os family="unix" />
+        </condition>
+        <condition property="is.nt">
+            <os family="winnt" />
+        </condition>
+        <condition property="is.mac">
+            <os family="mac" />
+        </condition>
+        <echo>
+            os.name=${os.name}
+            os.arch=${os.arch}
+            os.version=${os.version}
+            is.unix=${is.unix}
+            is.winnt=${is.winnt}
+            is.mac=${is.mac}
+        </echo>
+    </target>
+
+    <target name="probe_for_python" >
+        <property environment="env" />
+        <condition property="python.found" >
+            <or>
+                <available file="python"
+                           filepath="${env.PATH}" />
+                <available file="python.exe" filepath="${env.Path}" />
+            </or>
+        </condition>
+        <echo>python.found = ${python.found}</echo>
+    </target>
+
+    <target name="jconsole">
+        <exec executable="jconsole" spawn="true"/>
+    </target>
+</project>

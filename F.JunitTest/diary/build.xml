@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
-<project name="diary" default="jar" basedir=".">
+<project name="core-diary" default="default" basedir=".">
+
+    <description>
+        This build file compiles, tests, packages and
+        distributes the core library of the diary application.
+    </description>
+
+    <property file="build.properties"/>
 
     <property name="src.dir" location="src"/>
     <property name="lib.dir" location="lib"/>
@@ -13,21 +20,51 @@
     <property name="test.data.dir" location="${build.test.dir}/data"/>
     <property name="test.reports.dir" location="${build.test.dir}/reports"/>
 
+    <!-- set up distribution targets -->
     <property name="dist.dir" location="dist"/>
     <property name="dist.doc.dir" location="${dist.dir}/doc"/>
-    <property name="javadoc.dir" location="${dist.doc.dir}/api"/>
 
-    <property name="source.files.tocopy" value="**/*.properties,**/*.dtd,**/*.xml,**/*.xsd,**/*.jpg"/>
+    <property name="javadoc.dir" location="${dist.dir}/api"/>
 
-    <property name="project.name" value="${ant.project.name}"/>
+
+    <property name="project.name" value="diary-core"/>
     <property name="project.version" value="0.1alpha"/>
     <property name="project.name-ver" value="${project.name}-${project.version}"/>
-    <property name="target.jar" location="${dist.dir}/${project.name-ver}.jar"/>
+
+    <property name="main.class" value="d1.core.DiaryMain"/>
+    <property name="target.name" value="${project.name-ver}.jar"/>
+    <property name="target.jar" location="${dist.dir}/${target.name}"/>
+
+    <property name="build.debug" value="true"/>
+
+    <!-- what is our fork policy for junit -->
+    <property name="junit.fork" value="true"/>
+    <property name="junit.forkmode" value="once"/>
+    <property name="test.suite" value="d1.core.test.LessSimpleTest"/>
+
     <property name="target.zip" location="${dist.dir}/${project.name-ver}.zip"/>
     <property name="src.zip" location="${dist.dir}/${project.name-ver}-src.zip"/>
+
     <property name="target.tar" location="${dist.dir}/${project.name-ver}.tar"/>
     <property name="target.tar.gz" location="${target.tar}.gz"/>
     <property name="target.tar.bz2" location="${target.tar}.bz2"/>
+
+
+    <!-- pattern of source files to copy -->
+    <property name="source.files.tocopy" value="**/*.properties,**/*.dtd,**/*.xml,**/*.xsd,**/*.jpg"/>
+    <property name="bin.dir" location="bin"/>
+    <property name="unix.scripts" value="**/*.sh,**/*.pl,**/*.py"/>
+    <property name="dos.scripts" value="**/*.bat,**/*.cmd"/>
+
+    <property name="unzip.dir" location="${build.dir}/unzip"/>
+    <property name="unzip.bin.dir" location="${unzip.dir}/bin"/>
+    <property name="unzip.src.dir" location="${unzip.dir}/src"/>
+    <property name="untar.dir" location="${build.dir}/untar"/>
+    <property name="unjar.dir" location="${build.dir}/unjar"/>
+
+    <tstamp>
+        <format property="timestamp.isoformat" pattern="yyyy-MM-dd'T'HH:mm:ss" locale="en"/>
+    </tstamp>
 
     <path id="compile.classpath">
         <fileset dir="${lib.dir}">
@@ -45,9 +82,55 @@
         <pathelement location="${test.classes.dir}"/>
     </path>
 
+    <path id="test.forking.classpath">
+        <path refid="test.classpath"/>
+        <pathelement path="${java.class.path}"/>
+    </path>
+
+    <patternset id="failing.tests">
+        <exclude unless="run.failing.tests" name="d1/core/test/JavaAssertTest.*"/>
+    </patternset>
+
+    <fileset id="ftp.upload.fileset" dir="${dist.dir}">
+        <include name="*.zip"/>
+        <include name="*.zip.sha1"/>
+        <include name="*.tar.gz"/>
+        <include name="*.tar.gz.sha1"/>
+    </fileset>
+
+    <target name="echo-value">
+        <echo message="value = ${java.class.path}"/>
+    </target>
+
+    <!--<target name="default" depends="dist" description="package everything and checksum it"/>-->
+
+    <!--<target name="dist" depends="package-everything,checksum"-->
+    <!--description="create the distributables"/>-->
+
     <target name="init">
         <mkdir dir="${build.classes.dir}"/>
         <mkdir dir="${dist.doc.dir}"/>
+        <mkdir dir="${javadoc.dir}"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <condition property="build.debuglevel"
+                   value="lines,source"
+                   else="lines,vars,source">
+            <isset property="release.build"/>
+        </condition>
+        <echo level="verbose">debug level=${build.debuglevel}</echo>
+        <javac destdir="${build.classes.dir}"
+               debug="true"
+               debuglevel="${build.debuglevel}"
+               includeAntRuntime="false"
+               srcdir="${src.dir}">
+            <classpath refid="compile.classpath"/>
+            <include name="**/*.java"/>
+        </javac>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${src.dir}" includes="${source.files.tocopy}"/>
+        </copy>
     </target>
 
     <target name="test-init">
@@ -56,15 +139,6 @@
         <delete dir="${test.reports.dir}"/>
         <mkdir dir="${test.data.dir}"/>
         <mkdir dir="${test.reports.dir}"/>
-    </target>
-
-    <target name="compile" depends="init">
-        <javac srcdir="${src.dir}" destdir="${build.classes.dir}">
-            <include name="**/*.java"/>
-        </javac>
-        <copy todir="${build.classes.dir}">
-            <fileset dir="${src.dir}" includes="${source.files.tocopy}"/>
-        </copy>
     </target>
 
     <target name="test-compile" depends="compile,test-init">
@@ -77,7 +151,6 @@
         </javac>
     </target>
 
-    <property name="test.suite" value="d1.core.test.LessSimpleTest"/>
 
     <target name="test-one-class" depends="test-compile">
         <junit printsummary="false" haltonfailure="true">
@@ -85,6 +158,9 @@
             <formatter type="brief" usefile="false"/>
             <test name="${test.suite}"/>
         </junit>
+        <copy todir="${test.classes.dir}">
+            <fileset dir="${test.src.dir}" includes="${source.files.tocopy}"/>
+        </copy>
     </target>
 
     <target name="test-multi-classes" depends="test-compile">
@@ -132,12 +208,25 @@
     </target>
 
 
-    <target name="jar" depends="compile">
+    <target name="jar" depends="compile" description="create the JAR file">
+        <property name="manifest.mf" location="${build.dir}/manifest.mf"/>
+        <manifest file="${manifest.mf}">
+            <attribute name="Built-By" value="${user.name}"/>
+            <attribute name="Sealed" value="true"/>
+            <attribute name="Built-On" value="${timestamp.isoformat}"/>
+            <attribute name="Main-Class" value="${main.class}"/>
+        </manifest>
         <jar destfile="${target.jar}"
+             manifest="${manifest.mf}"
              duplicate="preserve"
              compress="false">
             <fileset dir="${build.classes.dir}"/>
         </jar>
+    </target>
+
+    <target name="unjar" depends="init">
+        <unjar src="${target.jar}" dest="${unjar.dir}">
+        </unjar>
     </target>
 
     <target name="dist-with-manifest" depends="compile" description="make the distribution">
@@ -151,10 +240,8 @@
 
     <target name="jar-dynamic-manifest" depends="compile">
         <property name="manifest.mf" location="${build.dir}/manifest.mf"/>
-        <property name="main.class" value="d1.DiaryMain"/>
-        <tstamp>
-            <format property="timestamp.isoformat" pattern="yyyy-MM-dd'T'HH:mm:ss"/>
-        </tstamp>
+        <property name="main.class" value="d1.core.DiaryMain"/>
+
 
         <manifest file="${manifest.mf}">
             <attribute name="Built-By" value="${user.name}"/>
@@ -309,12 +396,25 @@
     <target name="run" depends="sign-jar">
         <echo>running with classpath ${toString:run.classpath}</echo>
         <property environment="env"/>
-        <java classname="d1.DiaryMain" classpathref="run.classpath">
+        <java classname="d1.core.DiaryMain" classpathref="run.classpath">
             <!--<arg value="2019-09-17 22:00:00" />-->
             <!--<arg file="." />-->
             <!--<arg path="${user.home}:${env.ANT_HOME}" />-->
             <!--<arg pathref="run.classpath"/>-->
-            <arg line ="2019-09-17 . ${user.home};/" />
+            <arg line="2019-09-17 . ${user.home};/"/>
         </java>
     </target>
+
+    <target name="java-example-fork" depends="sign-jar">
+        <property name="classpath-as-property" refid="run.classpath"/>
+        <java classname="d1.core.DiaryMain"
+              classpathref="run.classpath"
+              fork="true">
+            <arg value="2005-06-31-08:30"/>
+            <arg file="."/>
+            <arg path="${user.home};/"/>
+        </java>
+    </target>
+
+
 </project>

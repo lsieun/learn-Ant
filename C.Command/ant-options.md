@@ -1,13 +1,15 @@
-# ant command
+# Ant command-line options
 
 <!-- TOC -->
 
-- [1. Ant command-line options](#1-ant-command-line-options)
-  - [1.1. build file](#11-build-file)
-  - [1.2. property](#12-property)
-  - [1.3. keep-going](#13-keep-going)
-  - [1.4. project info](#14-project-info)
-  - [1.5. runtime info](#15-runtime-info)
+- [1. ant software info](#1-ant-software-info)
+- [2. project](#2-project)
+  - [2.1. build file](#21-build-file)
+  - [2.2. property](#22-property)
+  - [2.3. keep-going](#23-keep-going)
+  - [2.4. project info](#24-project-info)
+- [3. runtime](#3-runtime)
+  - [3.1. runtime info](#31-runtime-info)
 
 <!-- /TOC -->
 
@@ -27,11 +29,19 @@ ant -v
 
 If ever you are unsure why a build is not behaving as expected, add the `-v` or `-verbose` option to get lots more information.
 
-## 1. Ant command-line options
 
 Ant can take a number of options, which it lists if you ask for them with `ant -help`.
 
-### 1.1. build file
+## 1. ant software info
+
+```bash
+## Print the version information and exit.
+ant -version
+```
+
+## 2. project
+
+### 2.1. build file
 
 Probably the most important Ant option is `-buildfile`. This option lets you control which build file Ant uses, allowing you to divide the targets of a project into multiple files and select the appropriate build file depending on your actions. A shortcut to `-buildfile` is `-f`.
 
@@ -44,7 +54,7 @@ ant -f <filename>
 ant -buildfile build.xml compile
 ```
 
-### 1.2. property
+### 2.2. property
 
 ```bash
 ## Set a property to a value.
@@ -54,7 +64,7 @@ ant -Dproperty=value
 ant -propertyfile file
 ```
 
-### 1.3. keep-going
+### 2.3. keep-going
 
 ```bash
 ## When one target on the command line fails, still run other targets.
@@ -64,20 +74,20 @@ ant -k
 
 The `-keep-going` option tells Ant to try to recover from a failure. If you supply more than one target on the command line, Ant normally stops the moment any of these targets—or any they depend upon—fail. The `-keep-going` option instructs Ant to continue running any target on the command line that doesn’t depend upon the target that fails. This lets you run a reporting target even if the main build didn’t complete.
 
-
-### 1.4. project info
+### 2.4. project info
 
 The option `-projecthelp` lists **the main targets** in a project and is invaluable whenever you need to know **what targets a build file provides**. Ant lists **only those targets** containing the optional `description` attribute, as these are the targets intended for public consumption.
 
 ```bash
 ## Print information about the current project
 ant -projecthelp
-
-## Print the version information and exit.
-ant -version
+## 或者
+ant -p
 ```
 
-### 1.5. runtime info
+## 3. runtime
+
+### 3.1. runtime info
 
 ```bash
 ## Print debugging information
