@@ -59,7 +59,7 @@ If a target directly depends on more than one target, then we list both dependen
 
 In our project, the `archive` target depends upon both `init` and `compile` , but we don’t bother to state the dependency upon `init` because the `compile` target already depends upon it. If Ant must execute `init` before `compile` and `archive` depends upon `compile` , then Ant must run `init` before `archive` . Put formally: **dependencies are transitive**.
 
-What isn’t important is the order of targets inside the build file. Ant reads the whole file before it builds the dependency tree and executes targets. There’s no need to worry about forward references to targets.
+What isn’t important is the order of targets inside the build file<sub>注：书写顺序不重要</sub>. Ant reads the whole file before it builds the dependency tree and executes targets. There’s no need to worry about forward references to targets.
 
 Before Ant executes any target, it executes all its predecessor targets. If these predecessors depend on targets themselves, Ant considers those and produces an order that satisfies all dependencies. If two targets in this execution order share a common dependency, then that predecessor will execute only once.
 

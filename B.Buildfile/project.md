@@ -4,7 +4,7 @@ The `<project>` element is always the root element in Ant build files, in this c
 
 ```xml
 <?xml version="1.0"?>
-<project name="firstbuild" default="compile" >
+<project name="diary" default="compile"  basedir=".">
 
 <target name="compile">
     <javac srcdir="." />

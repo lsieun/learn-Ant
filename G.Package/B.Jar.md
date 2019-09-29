@@ -7,12 +7,20 @@
 - [3. Creating JAR manifests](#3-creating-jar-manifests)
 - [4. Adding extra metadata to the JAR](#4-adding-extra-metadata-to-the-jar)
 - [5. JAR file best practices](#5-jar-file-best-practices)
-- [Signing JAR files](#signing-jar-files)
-  - [Generating a signing key](#generating-a-signing-key)
-  - [Signing the file](#signing-the-file)
-- [Testing With Jar Files](#testing-with-jar-files)
+- [6. Signing JAR files](#6-signing-jar-files)
+  - [6.1. Generating a signing key](#61-generating-a-signing-key)
+  - [6.2. Signing the file](#62-signing-the-file)
+- [7. Testing With Jar Files](#7-testing-with-jar-files)
 
 <!-- /TOC -->
+
+我的总结：
+
+- （1） 创建Jar文件
+  - 使用`<jar>` Task
+  - 添加meta data，例如`manifest.mf`
+- （2） 对Jar文件进行签名
+- （3） 对Jar文件进行JUnit测试
 
 The **JAR** file is the central redistributable of Java. It has derivatives, the most common of which are the **WAR** and **EAR** files for web applications and Enterprise applications, respectively. Underneath, they’re all **Zip archives**. Zip files/archives can store lots of files inside by using a choice of compression algorithms, including “uncompressed.”
 
@@ -20,9 +28,11 @@ The **JAR**, **WAR**, and **EAR** archives are all variations of the basic Zip f
 
 Building and manipulating JAR files is a common activity; anyone who uses Ant to build a project will soon become familiar with the `<zip>` and `<jar>` tasks.
 
-A **JAR** file stores classes in a simple tree resembling a package hierarchy, with any metadata added to the `META-INF` directory. This directory contains a manifest file `MANIFEST.MF`, which describes the JAR file to the classloader.
+A **JAR** file stores **classes** in a simple tree resembling a package hierarchy, with any **metadata** added to the `META-INF` directory<sub>注：Jar文件中包含了两类文件，class文件和meta data文件。</sub>. This directory contains a manifest file `MANIFEST.MF`, which describes the JAR file to the classloader.
 
 ## 1. Create Jar File
+
+The `<jar>` task creates a manifest file unless you explicitly provide one.
 
 ```xml
 <target name="jar" depends="compile">
@@ -34,9 +44,17 @@ A **JAR** file stores classes in a simple tree resembling a package hierarchy, w
 </target>
 ```
 
-The task creates a manifest file unless you explicitly provide one. The `compress` attribute controls whether the archive is compressed. By default `compress="true"`, but an uncompressed archive may be faster to load. Compressed files do download faster, however.
+The `compress` attribute controls whether the archive is compressed. By default `compress="true"`, but an uncompressed archive may be faster to load. Compressed files do download faster, however.<sub>注：这里讲compress属性</sub>
 
-The current preferred practice for libraries is to create an archive filename from a **project name** along with a **version number** in the format `d1-core-0.1.jar`. This lets users see at a glance what version a library is. We can support this practice with some property definitions ahead of the `jar` target:
+One thing that is important is that all the `<jar>` targets in this book have `duplicate="preserve"` set. The `duplicate` attribute tells Ant what to do when multiple filesets want to copy a file to the same path in the archive. It takes three values
+
+- `add`: silently add the duplicate file. This is the default.
+- `preserve`: ignore the duplicate file; preserve what is in the archive.
+- `fail`: halt the build with an error message.
+
+The default option, `add`, is dangerous because it silently corrupts JAR files. Ant itself will ignore the duplicate entry, and so will the JDK `jar` program. Other tools, such as the `javac` compiler, aren’t so forgiving, and will throw an `IndexOutOfBoundsException` or some other obscure stack trace if they encounter duplicate entries. If you don’t want to have users of your application or library making support calls, or want to waste mornings trying to track down these problems in other people’s libraries, change the default value! The most rigorous(谨慎的) option is `fail`, which warns of a duplication; `preserve` is good for producing good files without making a fuss.
+
+The current preferred practice for libraries<sub>注：这里讲的是命名规则</sub> is to create an archive filename from a **project name** along with a **version number** in the format `d1-core-0.1.jar`. This lets users see at a glance what version a library is. We can support this practice with some property definitions ahead of the `jar` target:
 
 ```xml
 <property name="project.name" value="${ant.project.name}" />
@@ -57,13 +75,6 @@ This target will now create the JAR file `dist/diary-core-0.1alpha.jar`. The `<j
 
 There is an `update` attribute that looks at dependencies between **source files** and **files stored inside the archive**. It can be used for incremental JAR file updates, in which only changed files are updated. Normally, we don’t bother with things like this; we just rebuild the entire JAR when a source file changes. JAR creation time only becomes an issue with big projects, such as in EAR files or WAR files.
 
-One thing that is important is that all the `<jar>` targets in this book have `duplicate="preserve"` set. The `duplicate` attribute tells Ant what to do when multiple filesets want to copy a file to the same path in the archive. It takes three values
-
-- `add`: silently add the duplicate file. This is the default.
-- `preserve`: ignore the duplicate file; preserve what is in the archive.
-- `fail`: halt the build with an error message.
-
-The default option, `add`, is dangerous because it silently corrupts JAR files. Ant itself will ignore the duplicate entry, and so will the JDK `jar` program. Other tools, such as the `javac` compiler, aren’t so forgiving, and will throw an `IndexOutOfBoundsException` or some other obscure stack trace if they encounter duplicate entries. If you don’t want to have users of your application or library making support calls, or want to waste mornings trying to track down these problems in other people’s libraries, change the default value! The most rigorous option is `fail`, which warns of a duplication; `preserve` is good for producing good files without making a fuss.
 
 Once created, we need to check that the JAR file contains everything it needs.
 
@@ -179,7 +190,7 @@ There are four things to consider for better `<jar>` tasks:
 - Always set `duplicate="preserve"`. It keeps duplicate entries out of a file and avoids possible problems later on.
 - Finally, and arguably most importantly, give your libraries a **version number** at the end.
 
-## Signing JAR files
+## 6. Signing JAR files
 
 Signed JAR files are loaded slightly differently, with the classloader preventing other JAR files from declaring classes in the same packages.
 
@@ -245,7 +256,7 @@ get-password:
 
 With the password in a property, we’re nearly ready to sign the JAR . We just need **a certificate** and the `<signjar>` task. First, **the certificate**.
 
-### Generating a signing key
+### 6.1. Generating a signing key
 
 To authenticate JARs in a Java runtime, you have to buy a certificate from one of the approved vendors. For testing purposes or for private use, you can generate a self-signed certificate using Sun’s `keytool` tool, which Ant wraps up into the `<genkey>` task. This task adds **a key** into **a keystore**, creating **the store** if needed:
 
@@ -268,7 +279,7 @@ To authenticate JARs in a Java runtime, you have to buy a certificate from one o
 
 This task creates **a new alias** in the **keystore**, with a certificate that’s valid for 366 days. Although these keys are cryptographically sound, tools such as the Java Web Start don’t trust them. If you’re verifying JAR files in your own application, you’re free to use self-generated keys, and within an organization or community you may be able to convince end users to add your certificate (or private certification authority) to the trusted list.
 
-### Signing the file
+### 6.2. Signing the file
 
 The `<signjar>` task **signs JAR files**. It checksums all the entries in the file, signs these checksums, and adds them to the manifest. It also adds signature information to the `META-INF` directory in the JAR file. The task needs **the location and the password of the keystore file**, and **the alias** and **any optional extra password for the signature itself**. It will then modify the JAR file in place by invoking the `jarsigner` tool in the JDK :
 
@@ -287,9 +298,9 @@ The `<signjar>` task can bulk(批量) sign a set of JAR files, using a nested `f
 
 Java behaves differently with signed JARs, and some applications can break. To be sure that this has not happened, we must take the signed JAR file of the diary classes and run our existing tests against it.
 
-## Testing With Jar Files
+## 7. Testing With Jar Files
 
-Running JUnit against a signed JAR file, rather than the raw classes, lets us test more things. It lets us test that the classes were added to the JAR file, that we’ve remembered to add any resources the application needs, and that the signing process has not broken anything. It also lets us state that the tests were run against the redistributables, which is something to be proud of.
+Running JUnit against a signed JAR file, rather than the raw classes, lets us test more things. It lets us test (1)that the classes were added to the JAR file<sub>注：第一，class文件没有缺失</sub>, (2)that we’ve remembered to add any resources the application needs<sub>注：第二，资源文件没有缺失</sub>, and (3)that the signing process has not broken anything<sub>注：第三，签名没有破坏Jar文件</sub>. It also lets us state that the tests were run against the redistributables, which is something to be proud of.
 
 It is very easy to test against the JAR file. Recall that we set up our classpath for compiling and running tests like this:
 
@@ -309,7 +320,7 @@ We need to change one line to run against the generated JAR file:
 </path>
 ```
 
-To verify everything works, run `ant clean test`. As clean builds are usually fast, don’t be afraid to run them regularly.
+To verify everything works, run `ant clean test`. As `clean` builds are usually fast, don’t be afraid to run them regularly.
 
 ```xml
 <path id="test.jar.classpath">

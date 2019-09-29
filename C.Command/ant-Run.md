@@ -22,15 +22,13 @@ Calling Ant with no target is the same as calling the target named in the `defau
 
 ## Incremental builds
 
-All of these tasks in the build file check their dependencies, and do nothing if they do not see a need. The `<mkdir>` task doesn’t create directories that already exist, `<javac>` compiles source files when they’re newer than the corresponding `.class` file, and the `<jar>` task compares the time of all files to be added to the archive with the time of the archive itself. No files have been compiled, and the
-JAR is untouched. This is called an **incremental build**.
+All of these tasks in the build file check their dependencies, and do nothing if they do not see a need. The `<mkdir>` task doesn’t create directories that already exist, `<javac>` compiles source files when they’re newer than the corresponding `.class` file, and the `<jar>` task compares the time of all files to be added to the archive with the time of the archive itself. No files have been compiled, and the JAR is untouched. This is called an **incremental build**.
 
 If you add the `-verbose` flag to the command line, you’ll get more detail on what did or did not take place. The verbose run provides a lot of information, much of which may seem distracting. When a build is working well, you don’t need it, but it’s invaluable while developing that file.
 
 ## Running multiple targets on the command line
 
-Developers can run **multiple targets** in a single build, by listing the targets one after the other on the command line. But what happens when you type `ant compile archive` at the command line? Many people would expect Ant to pick an order that executes each target and its dependencies once only: `[init , compile , archive]`. Unix Make would certainly do that, but Ant does not. Instead, it executes each target
-and dependents in turn, so the actual sequence is `init, compile`, then `init, compile, archive`.
+Developers can run **multiple targets** in a single build, by listing the targets one after the other on the command line. But what happens when you type `ant compile archive` at the command line? Many people would expect Ant to pick an order that executes each target and its dependencies once only: `[init, compile, archive]`. Unix Make would certainly do that, but Ant does not. Instead, it executes each target and dependents in turn, so the actual sequence is `init, compile`, then `init, compile, archive`.
 
 ```bash
 $ ant compile archive

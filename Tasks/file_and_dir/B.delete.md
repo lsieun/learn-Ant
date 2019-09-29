@@ -26,7 +26,7 @@ It can just as easily delete an entire directory with
 <delete dir="${dist.dir}"/>
 ```
 
-This task is dangerous, as it can silently delete everything in the specified directory and those below it. If someone accidentally sets the `dist.dir` property to the current directory, then the entire project will be destroyed. Be careful of what you delete.
+**This task is dangerous**, as it can silently delete everything in the specified directory and those below it. If someone accidentally sets the `dist.dir` property to the current directory, then the entire project will be destroyed. Be careful of what you delete.
 
 ## 3. delete selected files
 

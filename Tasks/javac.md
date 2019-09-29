@@ -59,10 +59,10 @@ When using the task, we could declare two `<src>` tags to compile two separate d
 
 <target name="compile" >
     <javac
-        destdir="${build.classes.dir}"
-        debug="${build.debug}"
-        srcdir="${src}">
-    <classpath refid="compile.classpath"/>
+         destdir="${build.classes.dir}"
+         debug="${build.debug}"
+         srcdir="${src}">
+        <classpath refid="compile.classpath"/>
     </javac>
 </target>
 ```

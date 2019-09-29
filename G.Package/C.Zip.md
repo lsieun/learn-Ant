@@ -1,5 +1,15 @@
 # Create Zip Files
 
+<!-- TOC -->
+
+- [1. zip task](#1-zip-task)
+- [2. Creating a binary Zip distribution](#2-creating-a-binary-zip-distribution)
+- [3. Creating a source distribution](#3-creating-a-source-distribution)
+
+<!-- /TOC -->
+
+## 1. zip task
+
 Ant creates Zip files as easily as it creates JAR files, using `<jar>`’s parent task, `<zip>`<sub>注：讲两者之间的继承关系</sub>. All attributes and elements of `<zip>` can be used in `<jar>`<sub>注：讲两者的相同之处</sub>, but the JAR-specific extras for the manifest and other metadata aren’t supported<sub>注：两者的不同的之处</sub>.
 
 ```java
@@ -29,7 +39,7 @@ Title: Extra attributes in `<zipfileset>` compared to a `<fileset>`
 | `filemode` | Unix file system permission; default is `644`                |
 | `dirmode`  | Unix directory permission; default is `755`                  |
 
-## Creating a binary Zip distribution
+## 2. Creating a binary Zip distribution
 
 Creating a binary Zip distribution:
 
@@ -56,7 +66,7 @@ To verify that this task works, we create a target to unzip the file:
 </target>
 ```
 
-## Creating a source distribution
+## 3. Creating a source distribution
 
 A source-only distribution contains the source tree and the build file(s); the recipient has to compile everything. Open-source projects may want to consider a single distribution containing the source and the binaries, delivering a quick start from the JAR files, yet offering the opportunity of editing the source to all users.
 

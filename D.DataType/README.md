@@ -24,7 +24,9 @@ The `fileset` datatype can enumerate which files to compile, package, copy, dele
 <fileset id="source.fileset" dir="src" includes="**/*.java" />
 ```
 
-By providing an `id` attribute, we’re defining a **reference**. This reference name can be used later wherever a `fileset` is expected. For example, copying our source code to another directory using the same `source.fileset` is
+By providing an `id` attribute, we’re defining a **reference**. This reference name can be used later wherever a `fileset` is expected.
+
+For example, copying our source code to another directory using the same `source.fileset` is
 
 ```xml
 <copy todir="backup">
