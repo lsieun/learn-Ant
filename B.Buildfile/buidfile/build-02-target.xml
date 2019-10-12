@@ -1,0 +1,31 @@
+<?xml version="1.0"  encoding="UTF-8"?>
+<project name="HelloWorld" default="run" basedir=".">
+
+    <!-- Creates the output directories -->
+    <target name="init">
+        <mkdir dir="build/classes" />
+        <mkdir dir="dist" />
+    </target>
+
+    <!-- Compiles into the output directories -->
+    <target name="compile" depends="init">
+        <javac srcdir="src" destdir="build/classes"/>
+    </target>
+
+    <!-- Creates the archive -->
+    <target name="archive" depends="compile" >
+        <jar destfile="dist/app.jar" basedir="build/classes" />
+    </target>
+
+    <!-- Run the Program -->
+    <target name="run" depends="archive">
+        <java classname="HelloWorld" classpath="dist/app.jar"/>
+    </target>
+
+    <!-- Deletes the output directories -->
+    <target name="clean" depends="init">
+        <delete dir="build" />
+        <delete dir="dist" />
+    </target>
+
+</project>

@@ -1,5 +1,15 @@
 # XML Primer
 
+<!-- TOC -->
+
+- [1. Character sets](#1-character-sets)
+- [2. Binary data](#2-binary-data)
+- [3. Escaping characters](#3-escaping-characters)
+- [4. XML Namespace](#4-xml-namespace)
+- [5. Namespace best practices](#5-namespace-best-practices)
+
+<!-- /TOC -->
+
 XML documents should begin with **an XML prolog**, which indicates **the version** and, optionally, **the encoding of the XML file**—usually the string `<?xml version="1.0"?>`. Next comes the XML content. This must consist of a single XML root element, which can contain other XML content nested inside.
 
 All Ant documents must have `project` as the root element, so all Ant XML files should have a structure something like this:
@@ -13,7 +23,7 @@ All Ant documents must have `project` as the root element, so all Ant XML files 
 </project> <!-- Close the root element -->
 ```
 
-## Character sets
+## 1. Character sets
 
 The default character set of XML files is not that of the local system; it is `UTF-8` encoded Unicode.
 
@@ -24,11 +34,11 @@ For example, to use the European character set, you must declare in the prolog t
 <?xml version="1.0" encoding="UTF-8"?>
 ```
 
-## Binary data
+## 2. Binary data
 
 XML **cannot** contain **binary data**; it has to be encoded using techniques like **base-64 encoding**. This is rarely an issue in Ant build files.
 
-## Escaping characters
+## 3. Escaping characters
 
 The most common symbols that you must escape in an Ant file.
 
@@ -67,13 +77,13 @@ Output:
 
 Even within **CDATA** or **Unicode escaping**, not all characters are allowed. As an example, the ASCII `NUL` symbol, `\u0000`, is forbidden, even with an `&#00;` declaration. The only allowed characters in the range `0-31` are `8`, `10` and `13`; **tab**, **newline** and **carriage-return**.
 
-## XML Namespace
+## 4. XML Namespace
 
 ```txt
 prefix --> XML namespace --> URI/URL --> no requirement for any file to be retrievable
 ```
 
-## Namespace best practices
+## 5. Namespace best practices
 
 To keep the complexity of XML namespaces manageable in a build file, here are some good practices:
 

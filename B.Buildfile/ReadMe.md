@@ -2,7 +2,41 @@
 
 Ant is told what to build by an XML file, a **build file**. This file describes all the actions to build an application, such as **creating directories**, **compiling the source**, **making a JAR file** and **running the program**.
 
-The build file is in XML , with the root `<project>` element representing a **Ant project**. This project contains **targets**, each of which represents **a stage of the project**. A target can depend on other targets, which is stated by listing the dependencies in the `depends` attributes of the `<target>`. Ant uses this information to determine which targets to execute, and in what order.
+```xml
+<?xml version="1.0"  encoding="UTF-8"?>
+<project name="HelloWorld" default="run" basedir=".">
+
+    <!-- Creates the output directories -->
+    <target name="init">
+        <mkdir dir="build/classes" />
+        <mkdir dir="dist" />
+    </target>
+
+    <!-- Compiles into the output directories -->
+    <target name="compile" depends="init">
+        <javac srcdir="src" destdir="build/classes"/>
+    </target>
+
+    <!-- Creates the archive -->
+    <target name="archive" depends="compile" >
+        <jar destfile="dist/app.jar" basedir="build/classes" />
+    </target>
+
+    <!-- Run the Program -->
+    <target name="run" depends="archive">
+        <java classname="HelloWorld" classpath="dist/app.jar"/>
+    </target>
+
+    <!-- Deletes the output directories -->
+    <target name="clean" depends="init">
+        <delete dir="build" />
+        <delete dir="dist" />
+    </target>
+
+</project>
+```
+
+The build file is in XML, with the root `<project>` element representing a **Ant project**. This project contains **targets**, each of which represents **a stage of the project**. A target can depend on other targets, which is stated by listing the dependencies in the `depends` attributes of the `<target>`. Ant uses this information to determine which targets to execute, and in what order.
 
 The actual work of the build is performed by **Ant tasks**. These tasks implement their own dependency checking<sub>注：这里的dependency checking可能是指：如果目录存在，就不创建目录了；如果有最新编译好的class文件，就不重新进行编译了</sub>, so they only do work if it is needed.
 

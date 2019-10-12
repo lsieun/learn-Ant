@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="core-diary" default="compile" basedir=".">
+
+    <description>
+        This build file compiles, tests, packages and
+        distributes the core library of the diary application.
+    </description>
+
+    <target name="compile">
+        <echo>compilation complete!</echo>
+    </target>
+
+</project>
