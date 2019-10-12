@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="test-variable-concat" basedir=".">
+
+    <property name="src.dir" location="src"/>
+    <property name="build.dir" location="build"/>
+    <property name="dist.dir" location="dist"/>
+
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+
+    <target name="init">
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <target name="clean" depends="init">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <path id="tasks.classpath">
+        <fileset dir="${user.home}/lib/ant/" includes="*.jar"/>
+    </path>
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="${user.home}/lib/ant/ant-contrib.jar"/>
+        </classpath>
+    </taskdef>
+
+    <property name="what.is.your.name" value="mobile.qq"/>
+
+    <target name="test-if">
+        <if>
+            <equals arg1="${what.is.your.name}" arg2="tom"/>
+            <then>
+                <echo message="My name is Tom."></echo>
+            </then>
+
+            <elseif>
+                <equals arg1="${what.is.your.name}" arg2="jerry"/>
+                <then>
+                    <echo message="My name is Jerry."></echo>
+                </then>
+            </elseif>
+
+            <else>
+                <echo message="I don't know your name."/>
+            </else>
+        </if>
+    </target>
+
+    <target name="test-switch">
+        <switch value="${what.is.your.name}">
+            <case value="mobile">
+                <echo message="The value of property is mobile"/>
+            </case>
+            <case value="qq">
+                <echo message="The value of property is qq"/>
+            </case>
+            <default>
+                <echo message="The value of property is ${what.is.your.name}"/>
+            </default>
+        </switch>
+    </target>
+
+
+
+    <target name="test-math">
+        <var name="op1" value="12"/>
+        <var name="op2" value="6"/>
+        <var name="op" value="+"/>
+        <math result="result" operand1="${op1}"
+              operation="${op}"
+              operand2="${op2}"
+              datatype="int"/>
+        <echo>${op1} ${op} ${op2} = ${result}</echo>
+    </target>
+
+    <target name="test-variable-change">
+        <property name="x" value="6"/>
+        <echo>${x}</echo>   <!-- will print 6 -->
+
+        <var name="x" unset="true"/>
+
+        <property name="x" value="12"/>
+        <echo>${x}</echo>   <!-- will print 12 -->
+    </target>
+
+    <target name="test-variable-concat">
+        <var name="str" value="I"/>
+        <var name="str" value="${str} am"/>
+        <var name="str" value="${str} a"/>
+        <var name="str" value="${str} string."/>
+        <echo>${str}</echo> <!-- print: I am a string. -->
+    </target>
+
+</project>

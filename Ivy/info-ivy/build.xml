@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="hello-ivy" default="echo" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <target name="echo" description="-->  echo properties">
+        <ivy:configure/>
+        <echo>
+            default settings dir:
+        </echo>
+        <echo message="ivy.default.settings.dir = ${ivy.default.settings.dir}"/>
+        <echo message="ivy.settings.file = ${ivy.settings.file}"/>
+
+        <echo>
+            ivy user dir:
+        </echo>
+        <echo message="ivy.default.ivy.user.dir = ${ivy.default.ivy.user.dir}"/>
+
+        <echo>
+            Local Repository:
+        </echo>
+        <echo message="ivy.local.default.root = ${ivy.local.default.root}"/>
+        <echo message="ivy.local.default.ivy.pattern = ${ivy.local.default.ivy.pattern}"/>
+        <echo message="ivy.local.default.artifact.pattern = ${ivy.local.default.artifact.pattern}"/>
+
+        <echo>
+            Shared Repository:
+        </echo>
+        <echo message="ivy.shared.default.root = ${ivy.shared.default.root}"/>
+        <echo message="ivy.shared.default.ivy.pattern = ${ivy.shared.default.ivy.pattern}"/>
+        <echo message="ivy.shared.default.artifact.pattern = ${ivy.shared.default.artifact.pattern}"/>
+
+        <echo>
+            Project Info: 参考ivy.jar!/org/apache/ivy/core/settings/ivy.properties
+        </echo>
+        <echo message="ivy.project.dir = ${ivy.project.dir}"/>
+        <echo message="ivy.lib.dir = ${ivy.lib.dir}"/>
+        <echo message="ivy.build.artifacts.dir = ${ivy.build.artifacts.dir}"/>
+        <echo message="ivy.distrib.dir = ${ivy.distrib.dir}"/>
+        <echo message="ivy.dep.file = ${ivy.dep.file}"/>
+    </target>
+</project>

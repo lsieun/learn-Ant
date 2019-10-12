@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ivy example" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <target name="resolve" description="==>  Resolve dependencies with ivy">
+        <ivy:resolve/>
+        <ivy:cachepath pathid="default.classpath"/>
+        <echo message="default.classpath is ${toString:default.classpath}"/>
+
+        <echo message="ivy.default.ivy.user.dir is ${ivy.default.ivy.user.dir}"/>
+        <echo message="ivy.local.default.root is ${ivy.local.default.root}"/>
+
+    </target>
+
+    <path id="compile.classpath">
+        <fileset dir="lib" includes="*.jar"/>
+    </path>
+
+    <target name="retrieve" description="==>  Resolve and Retrieve with ivy">
+        <ivy:resolve/>
+        <ivy:retrieve sync="true" type="jar"/>
+        <echo message="ivy.retrieve.pattern = ${ivy.retrieve.pattern}"/>
+    </target>
+
+    <target name="compile" depends="retrieve" description="==>  Compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" includeantruntime="false">
+            <classpath refid="compile.classpath"/>
+        </javac>
+    </target>
+
+    <target name="install" description="-->  install modules to localreporsitory">
+        <ivy:install organisation="commons-lang" module="commons-lang"
+                     revision="2.6" transitive="true" overwrite="false"
+                     from="public" to="local"/>
+    </target>
+
+    <target name="clean-cache" description="-->  Clean the cache">
+        <ivy:cleancache/>
+    </target>
+
+</project>

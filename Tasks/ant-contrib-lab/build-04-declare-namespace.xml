@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="load-ant-contrib" basedir="." xmlns:ac="antlib:net.sf.antcontrib">
+
+    <property name="ant-contrib.jar" location="${user.home}/lib/ant/ant-contrib.jar"/>
+
+    <target name="load-ant-contrib">
+        <taskdef resource="net/sf/antcontrib/antlib.xml"
+                 uri="antlib:net.sf.antcontrib"
+                 onerror="failall">
+            <classpath path="${ant-contrib.jar}"/>
+        </taskdef>
+    </target>
+
+    <target name="property-copy" depends="load-ant-contrib">
+        <property name="X" value="Y"/>
+        <property name="Y" value="Z"/>
+        <ac:propertycopy name="A" from="${X}"/>
+        <echo message="A = ${A}"/> <!-- 注意：结果是Z，而不是Y -->
+    </target>
+
+</project>

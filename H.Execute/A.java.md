@@ -181,7 +181,7 @@ Sometimes, you want to know if the program returned **a status code** or what th
     <java classname="d1.core.DiaryMain"
           classpathref="run.classpath"
           fork="true"
-          resultproperty="result" >
+          resultproperty="result">
         <arg value="2007-02-31-08:30" />
         <arg file="Event on February 31" />
     </java>

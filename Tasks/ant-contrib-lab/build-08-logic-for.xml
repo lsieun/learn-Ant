@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="test-for-file" basedir="." xmlns:ac="antlib:net.sf.antcontrib">
+
+    <property name="build.dir" location="build"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+
+    <target name="load-ant-contrib">
+        <taskdef resource="net/sf/antcontrib/antlib.xml"
+                 uri="antlib:net.sf.antcontrib"
+                 onerror="failall">
+            <classpath path="${user.home}/lib/ant/ant-contrib.jar"/>
+        </taskdef>
+    </target>
+
+    <target name="for" depends="load-ant-contrib">
+        <ac:for list="1,5,10" param="delay" delimiter=",">
+            <sequential>
+                <sleep milliseconds="@{delay}"/>
+                <tstamp>
+                    <format pattern="HH:mm:ss.SSSS" property="tstamp.@{delay}"/>
+                </tstamp>
+                <echo>@{delay}: ${tstamp.@{delay}}</echo>
+            </sequential>
+        </ac:for>
+    </target>
+
+
+    <target name="test-for-string" depends="load-ant-contrib">
+        <ac:for list="a,b,c,d,e" param="letter">
+            <sequential>
+                <echo>Letter @{letter}</echo>
+            </sequential>
+        </ac:for>
+    </target>
+
+    <target name="test-for-file" depends="load-ant-contrib">
+        <ac:for param="xmlfile">
+            <fileset dir="${basedir}/ant-contrib-files" includes="**/*.xml"/>
+            <sequential>
+                <copy file="@{xmlfile}" todir="${build.classes.dir}"></copy>
+                <echo message="@{xmlfile}"/>
+            </sequential>
+        </ac:for>
+    </target>
+
+    <target name="for-files" depends="load-ant-contrib">
+        <ac:for param="name">
+            <path>
+                <fileset dir="build" includes="**/*.xml"/>
+            </path>
+            <sequential>
+                <echo>@{name}</echo>
+            </sequential>
+        </ac:for>
+    </target>
+
+</project>

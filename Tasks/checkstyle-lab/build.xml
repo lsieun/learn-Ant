@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="checkstyle" basedir="."
+         xmlns:cs="antlib:com.puppycrawl.tools.checkstyle.ant">
+
+    <property name="xml.dir" location="xml"/>
+    <property name="checkstyle.policy" location="${xml.dir}/sun_checks.xml"/>
+    <property name="checkstyle.xsl" location="${xml.dir}/checkstyle-frames.xsl"/>
+
+    <property name="build.dir" location="build"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <property name="build.checkstyle.dir" location="${build.dir}/checkstyle"/>
+
+    <property name="checkstyle.report.xml" location="${build.checkstyle.dir}/checkstyle.xml"/>
+    <property name="checkstyle.report.html" location="${build.checkstyle.dir}/checkstyle.html"/>
+
+    <property name="checkstyle.jar" location="${user.home}/lib/ant/checkstyle-8.25-all.jar"/>
+
+    <path id="compile.classpath">
+        <fileset dir="lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement location="${checkstyle.jar}"/>
+    </path>
+
+    <path id="test.compile.classpath">
+        <path refid="compile.classpath"/>
+        <pathelement location="${build.classes.dir}"/>
+    </path>
+
+    <target name="init">
+        <mkdir dir="${build.checkstyle.dir}"/>
+    </target>
+
+    <target name="checkstyle-init" depends="init">
+        <taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties"
+                 uri="antlib:com.puppycrawl.tools.checkstyle.ant"
+                 onerror="failall">
+            <classpath path="${checkstyle.jar}"/>
+        </taskdef>
+    </target>
+
+    <target name="checkstyle-run" depends="checkstyle-init">
+        <echo message="the.path is ${toString:compile.classpath}"/>
+        <cs:checkstyle
+                failOnViolation="false"
+                failureProperty="checkstyle.failed"
+                config="${checkstyle.policy}"
+                classpathref="compile.classpath">
+            <formatter type="plain"/>
+            <formatter type="xml" toFile="${checkstyle.report.xml}"/>
+            <fileset dir="src" includes="**/*.java"/>
+
+        </cs:checkstyle>
+    </target>
+
+    <target name="checkstyle-report" depends="checkstyle-run" if="checkstyle.failed">
+        <xslt style="${checkstyle.xsl}"
+              in="${checkstyle.report.xml}"
+              out="${checkstyle.report.html}"/>
+
+        <fail>
+            Checkstyle reported style failures. See ${checkstyle.report.html}
+        </fail>
+    </target>
+
+    <target name="checkstyle" depends="checkstyle-report"/>
+
+</project>

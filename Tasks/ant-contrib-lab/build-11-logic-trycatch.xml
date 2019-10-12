@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="trycatch" basedir="." xmlns:ac="antlib:net.sf.antcontrib">
+
+    <target name="load-ant-contrib">
+        <taskdef resource="net/sf/antcontrib/antlib.xml"
+                 uri="antlib:net.sf.antcontrib"
+                 onerror="failall">
+            <classpath path="${user.home}/lib/ant/ant-contrib.jar"/>
+        </taskdef>
+    </target>
+
+    <target name="trycatch" depends="load-ant-contrib">
+        <property name="localhost" value="http://localhost:8080/"/>
+        <tempfile property="temp.file" suffix=".html"/>
+        <ac:trycatch
+                property="exception.message"
+                reference="exception.ref">
+
+            <ac:try>
+                <get src="${localhost}" dest="${temp.file}"/>
+                <!-- more processing here -->
+            </ac:try>
+
+            <ac:catch>
+                <echo>Caught: ${exception.message}</echo>
+                <ac:throw refid="exception.ref"/>
+            </ac:catch>
+
+            <ac:finally>
+                <echo>cleanup</echo>
+                <delete file="${temp.file}"/>
+            </ac:finally>
+
+        </ac:trycatch>
+    </target>
+
+</project>

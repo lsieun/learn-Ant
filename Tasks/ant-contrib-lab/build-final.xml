@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="archive" basedir=".">
+
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+      <classpath>
+        <pathelement location="${user.home}/lib/ant/ant-contrib.jar"/>
+      </classpath>
+    </taskdef>
+
+
+    <property name="src.dir" location="src"/>
+    <property name="build.dir" location="build"/>
+    <property name="dist.dir" location="dist"/>
+
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+
+    <property name="project.name" value="${ant.project.name}"/>
+    <property name="project.version" value="1.0.0"/>
+    <property name="target.jar" location="${dist.dir}/${project.name}-${project.version}.jar"/>
+
+    <!-- Creates the output directories -->
+    <target name="init">
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <!-- Compiles into the output directories -->
+    <target name="compile" depends="init">
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}"/>
+    </target>
+
+    <!-- Creates the archive -->
+    <target name="archive" depends="compile">
+        <jar destfile="${target.jar}" basedir="${build.classes.dir}"/>
+    </target>
+
+    <!-- Deletes the output directories -->
+    <target name="clean" depends="init">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <target name="execute" depends="compile">
+        <java classname="com.example.ant.Main" classpath="${build.classes.dir}">
+            <arg value="a"/>
+            <arg value="b"/>
+            <arg file="."/>
+        </java>
+    </target>
+
+</project>

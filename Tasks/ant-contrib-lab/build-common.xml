@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="init" basedir=".">
+
+    <property name="src.dir" location="src"/>
+    <property name="build.dir" location="build"/>
+    <property name="dist.dir" location="dist"/>
+
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+
+    <target name="init">
+
+        <echo message="&apos;&lt;$&gt;&amp;&quot;"/>
+        <echo message="&#x00df;"/>
+
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <target name="clean" depends="init">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+</project>

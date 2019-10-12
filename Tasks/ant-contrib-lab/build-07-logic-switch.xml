@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="test-switch" basedir="." xmlns:ac="antlib:net.sf.antcontrib">
+
+    <target name="load-ant-contrib">
+        <taskdef resource="net/sf/antcontrib/antlib.xml"
+                 uri="antlib:net.sf.antcontrib"
+                 onerror="failall">
+            <classpath path="${user.home}/lib/ant/ant-contrib.jar"/>
+        </taskdef>
+    </target>
+
+    <target name="test-switch" depends="load-ant-contrib">
+        <property name="what.is.your.name" value="jerry"/>
+        <ac:switch value="${what.is.your.name}">
+            <ac:case value="tom">
+                <echo message="The value of property is Tom"/>
+            </ac:case>
+
+            <ac:case value="jerry">
+                <echo message="The value of property is Jerry"/>
+            </ac:case>
+
+            <ac:default>
+                <echo message="The value of property is ${what.is.your.name}"/>
+            </ac:default>
+        </ac:switch>
+    </target>
+
+    <target name="identify-SCM" depends="load-ant-contrib">
+        <property name="scm" value="cvs"/>
+        <ac:switch value="${scm}">
+            <ac:case value="cvs">
+                <echo>using CVS</echo>
+            </ac:case>
+            <ac:case value="svn">
+                <echo>using Subversion</echo>
+            </ac:case>
+            <ac:default>
+                <echo>No SCM system defined</echo>
+            </ac:default>
+        </ac:switch>
+    </target>
+
+</project>

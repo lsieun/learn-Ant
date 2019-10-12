@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="test-if" basedir="." xmlns:ac="antlib:net.sf.antcontrib">
+
+    <target name="load-ant-contrib">
+        <taskdef resource="net/sf/antcontrib/antlib.xml"
+                 uri="antlib:net.sf.antcontrib"
+                 onerror="failall">
+            <classpath path="${user.home}/lib/ant/ant-contrib.jar"/>
+        </taskdef>
+    </target>
+
+
+    <target name="test-if" depends="load-ant-contrib">
+
+        <property name="what.is.your.name" value="TOM"/>
+
+        <ac:if>
+            <equals arg1="${what.is.your.name}" arg2="tom" casesensitive="false"/>
+            <ac:then>
+                <echo message="My name is Tom."></echo>
+            </ac:then>
+
+            <ac:elseif>
+                <equals arg1="${what.is.your.name}" arg2="jerry"/>
+                <ac:then>
+                    <echo message="My name is Jerry."></echo>
+                </ac:then>
+            </ac:elseif>
+
+            <ac:else>
+                <echo message="I don't know your name."/>
+            </ac:else>
+        </ac:if>
+
+    </target>
+
+    <target name="if-get" depends="load-ant-contrib">
+        <property name="localhost" value="http://localhost:8080/"/>
+        <ac:if>
+            <http url="${localhost}"/>
+            <ac:then>
+                <tempfile property="temp.file" suffix=".html"/>
+                <get src="${localhost}" dest="${temp.file}"/>
+            </ac:then>
+            <ac:else>
+                <echo>skipping fetch of ${localhost}</echo>
+            </ac:else>
+        </ac:if>
+    </target>
+
+</project>

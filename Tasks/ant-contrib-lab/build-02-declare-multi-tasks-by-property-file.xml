@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="test-if" basedir=".">
+
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${user.home}/lib/ant/ant-contrib.jar"/>
+        </classpath>
+    </taskdef>
+
+    <property name="what.is.your.name" value="jerry"/>
+
+    <target name="test-if">
+        <if>
+            <equals arg1="${what.is.your.name}" arg2="tom"/>
+            <then>
+                <echo message="My name is Tom."></echo>
+            </then>
+
+            <elseif>
+                <equals arg1="${what.is.your.name}" arg2="jerry"/>
+                <then>
+                    <echo message="My name is Jerry."></echo>
+                </then>
+            </elseif>
+
+            <else>
+                <echo message="I don't know your name."/>
+            </else>
+        </if>
+    </target>
+
+</project>

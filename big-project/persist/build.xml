@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="diary-persist" default="default" basedir=".">
+    <echo>Building ${ant.file}</echo>
+
+
+    <target name="default" depends="dist" description="default: Make everything"/>
+    <target name="all" depends="dist" description="build everything"/>
+
+    <target name="test" depends="dist" description="run tests"/>
+    <target name="docs" depends="javadocs" description="generate documentation"/>
+    <target name="clean" description="clean up"/>
+    <target name="dist" description="dist"/>
+    <target name="javadocs" description="javadocs"/>
+    <target name="noop">
+        <echo>in ${basedir}</echo>
+    </target>
+</project>

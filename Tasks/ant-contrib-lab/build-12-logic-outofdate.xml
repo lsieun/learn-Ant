@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project name="third-party-task" default="trycatch" basedir="." xmlns:ac="antlib:net.sf.antcontrib">
+
+    <target name="load-ant-contrib">
+        <taskdef resource="net/sf/antcontrib/antlib.xml"
+                 uri="antlib:net.sf.antcontrib"
+                 onerror="failall">
+            <classpath path="${user.home}/lib/ant/ant-contrib.jar"/>
+        </taskdef>
+    </target>
+
+    <target name="compile">
+
+    </target>
+
+    <target name="javadocs-outofdate" depends="compile, load-ant-contrib" description="make the java docs">
+        <ac:outofdate>
+            <sourcefiles>
+                <fileset dir="src" includes="**/*.java"/>
+            </sourcefiles>
+            <mapper type="glob"
+                    dir="src" from="*.java" to="${javadoc.dir}/*.html"/>
+            <sequential>
+                <javadoc
+                        access="private"
+                        destdir="${javadoc.dir}"
+                        packagenames="d1.*"
+                        sourcepath="src"
+                        use="true"
+                        version="true"
+                        windowtitle="${ant.project.name}"
+                        failonerror="true">
+                    <classpath refid="compile.classpath"/>
+                </javadoc>
+            </sequential>
+        </ac:outofdate>
+    </target>
+
+</project>
